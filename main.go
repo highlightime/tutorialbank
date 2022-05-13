@@ -25,7 +25,7 @@ func index(w http.ResponseWriter, r *http.Request) {
 		id := r.FormValue("id")
 		pw := r.FormValue("pw")
 
-		db, err := sql.Open("mysql", "root:970810@/testdb")
+		db, err := sql.Open("mysql", "root:password@/testdb")
 		if err != nil {
 			panic(err)
 		}

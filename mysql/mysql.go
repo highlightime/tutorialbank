@@ -49,18 +49,7 @@ func Open(db *sql.DB) error {
 }
 
 func Login(db *sql.DB, id, pw string) (bool, error) {
-	// SELECT 쿼리
-	row := fmt.Sprintf(`SELECT id, pw FROM test WHERE id='%s' and pw='%s'`, id, pw)
-	rows, err := db.Query(row)
-	if err != nil {
-		log.Fatal(err)
-		return true, err
-	}
-	defer rows.Close() //반드시 닫는다 (지연하여 닫기)
-	fmt.Println("select")
-	if rows != nil {
-		return true, nil
-	}
+
 	return false, nil
 }
 
@@ -79,19 +68,33 @@ func Put(db *sql.DB, id, pw string) error {
 
 func Find(db *sql.DB, id string) (bool, error) {
 	// SELECT 쿼리
+	var s sql.NullString
 	row := fmt.Sprintf(`SELECT id, pw FROM test WHERE id='%s'`, id)
-	rows, err := db.Query(row)
+	err := db.QueryRow(row).Scan(&s)
 	if err != nil {
-		log.Fatal(err)
-		return true, err
+		return false, err
 	}
-	defer rows.Close() //반드시 닫는다 (지연하여 닫기)
 	fmt.Println("select")
-	if rows != nil {
+	if s.Valid {
+		// use s.String
 		fmt.Println("Duplicated")
 		return true, nil
 	}
 	return false, nil
+}
+
+func Signup(db *sql.DB, id string, pw string) (bool, error) {
+	isDup, _ := Find(db, id)
+	if !isDup {
+		err := Put(db, id, pw)
+		if err != nil {
+			log.Fatal(err)
+			return false, nil
+		}
+		return true, nil
+	} else {
+		return false, nil
+	}
 }
 
 func GetBal(db *sql.DB, id string) (int, error) {

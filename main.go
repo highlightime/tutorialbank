@@ -25,7 +25,7 @@ func index(w http.ResponseWriter, r *http.Request) {
 		id := r.FormValue("id")
 		pw := r.FormValue("pw")
 
-		db, err := sql.Open("mysql", "root:password@/testdb")
+		db, err := sql.Open("mysql", "root:970810@/testdb")
 		if err != nil {
 			panic(err)
 		}
@@ -36,41 +36,13 @@ func index(w http.ResponseWriter, r *http.Request) {
 			log.Fatal(err)
 		}
 
-		isDup, err := mysql.Find(db, id)
-		if err != nil {
-			log.Fatal(err)
-		}
-		fmt.Println(isDup)
-		if !isDup {
-			err = mysql.Put(db, id, pw)
-			if err != nil {
-				log.Fatal(err)
-			}
+		ok, err := mysql.Signup(db, id, pw)
+		if ok {
 			fmt.Fprintf(w, "Signup with website! r.PostFrom = %v\n", r.PostForm)
 			fmt.Fprintf(w, "ID = %s\n", id)
 			fmt.Fprintf(w, "Password = %s\n", pw)
 		} else {
-			// login
-			/*
-				ok, err := mysql.Login(db, id, pw)
-				if err != nil {
-					log.Fatal(err)
-				}
-				// TODO: Ok 가 아닌 경우에도 로그인되는거로 들어가고있음
-				if ok {
-					http.ServeFile(w, r, "balance.html")
-					bal, err := mysql.GetBal(db, id)
-					if err != nil {
-						log.Fatal(err)
-					}
-					fmt.Println(bal)
-					//fmt.Fprintf(w, "ID = %s\n", id)
-					//fmt.Fprintf(w, "Password = %s\n", pw)
-				} else {
-					// reload
-					http.ServeFile(w, r, "index.html")
-				}
-			*/
+			http.ServeFile(w, r, "index.html")
 		}
 	default:
 		fmt.Fprintf(w, "Sorry, only GET and POST methods are supported.")

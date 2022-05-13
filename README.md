@@ -1,8 +1,13 @@
 
-mysql.server start
-mysql -u root -p
+`mysql.server start`
+
+`mysql -u root -p`
 
 
-CREATE DATABASE `testdb`;
-USE testdb;
-SELECT * FROM test;
+
+
+CREATE DATABASE YOUR_DATABASE_NAME;
+
+USE YOUR_DATABASE_NAME;
+
+SELECT * FROM YOUR_TABLE_NAME;
